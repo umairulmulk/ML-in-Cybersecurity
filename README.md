@@ -125,5 +125,5 @@ Confusion Matrix:
 2. Adjust the `spam_path` and `ham_path` variables to point to your dataset.
 3. Run the script to train and evaluate the model.
 
-[For a detailed explanation of the project and the steps involved, check out the full article on Medium: ](url)
+## For a detailed explanation of the project and the steps involved, check out the full article on Medium: (url)
 [Email Spam Classifier with Decision Tree](https://medium.com/@umairm142/introduction-ee2512a061b6)
