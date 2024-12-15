@@ -1,125 +1,126 @@
-# Spam Email Classification Using Decision Tree Classifier
+# Email Spam Classifier Using Decision Tree
 
+This project demonstrates a simple implementation of an email spam classifier using the **DecisionTreeClassifier** from scikit-learn. The dataset is sourced from the "SpamAssassin Public Corpus," with email text being vectorized using **HashingVectorizer** and transformed using **TfidfTransformer**.
 
-This project builds a spam email classifier using a Decision Tree Classifier integrated with a HashingVectorizer and TfidfTransformer. The dataset used is the SpamAssassin Public Corpus, which includes separate folders for spam and ham (non-spam) emails.
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Dataset Structure](#dataset-structure)
+- [Code Explanation](#code-explanation)
+  - [Step 1: Load Dataset](#step-1-load-dataset)
+  - [Step 2: Assign Labels](#step-2-assign-labels)
+  - [Step 3: Train-Test Split](#step-3-train-test-split)
+  - [Step 4: Text Vectorization](#step-4-text-vectorization)
+  - [Step 5: Model Training](#step-5-model-training)
+  - [Step 6: Evaluation](#step-6-evaluation)
+- [Final Output](#final-output)
 
-Features
-Preprocesses email content into numerical representations using HashingVectorizer and TfidfTransformer.
-Uses a Decision Tree Classifier for training and prediction.
-Evaluates model performance using accuracy and a confusion matrix.
-Installation
-Prerequisites
-Python 3.7 or higher
-Install the required libraries by running:
-bash
-Copy code
-pip install -U scikit-learn
-Dataset Setup
-Download the SpamAssassin Public Corpus from SpamAssassin Corpus.
-Extract the dataset and organize it into the following directory structure:
-arduino
-Copy code
+## Prerequisites
+Make sure you have the following Python libraries installed:
+
+```bash
+pip install scikit-learn
+```
+
+Additionally, you need the "SpamAssassin Public Corpus" dataset. Place the dataset in the following structure:
+
+```
 spamassassin-public-corpus/
-  spam/
-    spam1.txt
-    spam2.txt
-    ...
-  ham/
-    ham1.txt
-    ham2.txt
-    ...
-Project Steps
-Step 1: Loading the Dataset
-The script reads the email files from the spam and ham directories:
+spam/
+spam1.txt
+spam2.txt
+ham/
+ham1.txt
+ham2.txt
+```
 
-spam/ contains spam emails.
-ham/ contains non-spam emails.
-The function load_emails_from_folder iterates through each folder, reads email files, and returns a list of email contents.
+## Dataset Structure
+- `spam/`: Contains spam emails.
+- `ham/`: Contains non-spam (ham) emails.
 
-Step 2: Assigning Labels
-Spam emails are assigned the label 0.
-Ham emails are assigned the label 1.
-Both spam and ham emails are combined into a single list, email_contents, while their labels are stored in email_labels.
+## Code Explanation
 
-Step 3: Splitting Data
-The data is split into training and test sets using an 80-20 split:
+### Step 1: Load Dataset
+The `load_emails_from_folder` function reads email text files from a given directory. Emails are loaded as plain text.
 
-80% for training the model.
-20% for testing the model's performance.
-The train_test_split function ensures that both the training and test sets contain a mix of spam and ham emails.
+```python
+def load_emails_from_folder(folder_path):
+    emails = []
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        with open(file_path, 'r', encoding='latin1') as file:
+            emails.append(file.read())
+    return emails
+```
 
-Step 4: Text Vectorization
-Email content, being text data, is converted into numerical representations using:
+The spam and ham email directories are loaded as follows:
+```python
+spam_emails = load_emails_from_folder(spam_path)
+ham_emails = load_emails_from_folder(ham_path)
+```
 
-HashingVectorizer:
-Converts the text into a sparse matrix of word frequencies using a hashing mechanism.
-The number of features is set to 
-2
-12
-=
-4096
-2 
-12
- =4096 to balance memory efficiency and accuracy.
-TfidfTransformer:
-Transforms the word frequency matrix into Term Frequency-Inverse Document Frequency (TF-IDF) values.
-These values represent how important a word is to an email compared to the entire dataset.
-Step 5: Training the Model
-The Decision Tree Classifier is trained using:
+### Step 2: Assign Labels
+Spam emails are labeled as `0`, and ham emails are labeled as `1`. These labels are combined with the email content:
+```python
+email_contents = spam_emails + ham_emails
+email_labels = [0] * len(spam_emails) + [1] * len(ham_emails)
+```
 
-X_train_vec: The TF-IDF transformed training data.
-y_train: The labels for the training data.
-The fit method of the classifier trains the model to classify spam and ham emails.
+### Step 3: Train-Test Split
+The dataset is split into 80% training and 20% testing using `train_test_split`:
+```python
+X_train, X_test, y_train, y_test = train_test_split(
+    email_contents, email_labels, test_size=0.2, random_state=42)
+```
 
-Step 6: Evaluating the Model
-After training, the model is tested on the test dataset:
+### Step 4: Text Vectorization
+We use `HashingVectorizer` to convert text into sparse numerical feature vectors and `TfidfTransformer` to scale them based on term frequency-inverse document frequency (TF-IDF):
+```python
+vectorizer = HashingVectorizer(n_features=2**12)
+tfidf_transformer = TfidfTransformer()
 
-Predictions:
-The classifier predicts labels for X_test_vec.
-Accuracy:
-The accuracy_score function computes the percentage of correct predictions.
+X_train_vec = tfidf_transformer.fit_transform(vectorizer.transform(X_train))
+X_test_vec = tfidf_transformer.transform(vectorizer.transform(X_test))
+```
+
+### Step 5: Model Training
+A Decision Tree classifier is trained on the transformed data:
+```python
+classifier = DecisionTreeClassifier()
+classifier.fit(X_train_vec, y_train)
+```
+
+### Step 6: Evaluation
+The trained model is evaluated using accuracy and a confusion matrix:
+```python
+y_pred = classifier.predict(X_test_vec)
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+print("Model Accuracy:", accuracy)
+print("Confusion Matrix:\n", conf_matrix)
+```
+
+## Final Output
+The code outputs the following:
+1. **Model Accuracy**: The percentage of correctly classified emails.
+2. **Confusion Matrix**: A matrix showing the counts of true positives, false positives, true negatives, and false negatives.
+
+Example output:
+```
+Model Accuracy: 0.85
 Confusion Matrix:
-The confusion_matrix function provides a summary of:
-True Positives (correctly identified spam emails).
-True Negatives (correctly identified ham emails).
-False Positives (ham emails misclassified as spam).
-False Negatives (spam emails misclassified as ham).
-How to Run the Script
-Ensure the dataset directory paths (spam_path and ham_path) are correctly set in the script.
-Run the script:
-bash
-Copy code
-python spam_classifier.py
-View the output:
-Accuracy: Overall performance of the model.
-Confusion Matrix: Detailed classification results.
-Sample Output
-text
-Copy code
-Model Accuracy: 0.92
-Confusion Matrix:
- [[189  11]
-  [ 14 186]]
-Project Structure
-arduino
-Copy code
-spam-classifier/
-│
-├── spamassassin-public-corpus/
-│   ├── spam/
-│   ├── ham/
-│
-├── spam_classifier.py
-├── README.md
-Dependencies
-Python 3.7 or higher
-Required libraries:
-scikit-learn
-os
-Notes
-Ensure the dataset contains a sufficient number of files in both spam and ham directories for meaningful results.
-Modify the paths in the script if the dataset is located in a different directory.
-Further Improvements
-Use more advanced classifiers (e.g., Random Forest, Gradient Boosting).
-Add hyperparameter tuning for the Decision Tree Classifier.
-Explore deep learning techniques for text classification.
+ [[25  5]
+  [ 3 27]]
+```
+
+- **Accuracy**: 85%
+- **Confusion Matrix**:
+  - True Positives (Spam correctly identified): `25`
+  - False Positives (Ham misclassified as Spam): `5`
+  - True Negatives (Ham correctly identified): `27`
+  - False Negatives (Spam misclassified as Ham): `3`
+
+## How to Run
+1. Place the dataset in the required structure.
+2. Adjust the `spam_path` and `ham_path` variables to point to your dataset.
+3. Run the script to train and evaluate the model.
