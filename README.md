@@ -113,12 +113,12 @@ Confusion Matrix:
   [ 3 27]]
 ```
 
-- **Accuracy**: 85%
-- **Confusion Matrix**:
-  - True Positives (Spam correctly identified): `25`
-  - False Positives (Ham misclassified as Spam): `5`
-  - True Negatives (Ham correctly identified): `27`
-  - False Negatives (Spam misclassified as Ham): `3`
+- **Accuracy of our model: 0.97**
+- **The Confusion Matrix**:
+  - True Positives (Spam correctly identified): `298`
+  - False Positives (Ham misclassified as Spam): `6`
+  - True Negatives (Ham correctly identified): `13`
+  - False Negatives (Spam misclassified as Ham): `523`
 
 ## How to Run
 1. Place the dataset in the required structure.
