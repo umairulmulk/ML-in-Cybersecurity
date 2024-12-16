@@ -107,10 +107,10 @@ The code outputs the following:
 
 Example output:
 ```
-Model Accuracy: 0.85
-Confusion Matrix:
- [[25  5]
-  [ 3 27]]
+Accuracy of our Model: 97%
+The Confusion Matrix:
+ [[298  6]
+  [ 13 523]]
 ```
 
 - **Accuracy of our model: 0.97**
